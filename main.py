@@ -3,8 +3,9 @@ import logging
 import os
 import sys
 from pathlib import Path
+from crawl4ai import AsyncWebCrawler
 from dotenv import load_dotenv
-from config import BASE_URL, REQUIRED_KEYS
+from config import BASE_URL, EXTRACTION_MODE, REQUIRED_KEYS, SCRAPER_ENGINE
 from utils.data_utils import save_ev_to_csv
 from utils.scraper_utils import fetch_and_process_page
 
@@ -34,23 +35,30 @@ async def crawl_ev_scooters():
     all_evs = []
     seen_names = set()
 
-    while True:
-        evs, no_results_found = await fetch_and_process_page(
-            page_number, BASE_URL, REQUIRED_KEYS, seen_names
-        )
+    async with AsyncWebCrawler(base_directory=str(PROJECT_ROOT), verbose=False) as crawler:
+        while True:
+            evs, no_results_found = await fetch_and_process_page(
+                crawler,
+                page_number,
+                BASE_URL,
+                REQUIRED_KEYS,
+                seen_names,
+                extraction_mode=EXTRACTION_MODE,
+                scraper_engine=SCRAPER_ENGINE,
+            )
 
-        if no_results_found:
-            print("No more EV scooters found. Ending crawl.")
-            break  # Stop if no more results
+            if no_results_found:
+                print("No more EV scooters found. Ending crawl.")
+                break  # Stop if no more results
 
-        if not evs:
-            print(f"No EVs extracted from page {page_number}.")
-            break  # Stop if no EVs found
+            if not evs:
+                print(f"No EVs extracted from page {page_number}.")
+                break  # Stop if no EVs found
 
-        all_evs.extend(evs)
-        page_number += 1
+            all_evs.extend(evs)
+            page_number += 1
 
-        await asyncio.sleep(2)  # Be polite to the website
+            await asyncio.sleep(2)  # Be polite to the website
 
     if all_evs:
         save_ev_to_csv(all_evs, "ev_scooters.csv")
