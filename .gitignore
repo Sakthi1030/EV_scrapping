@@ -1,0 +1,5 @@
+.env
+.crawl4ai/
+__pycache__/
+*/__pycache__/
+*.pyc
