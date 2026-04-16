@@ -157,16 +157,6 @@ The CSV contains:
 - `emi`
 - `extra_details`
 
-## Interview Summary
-
-You can describe this project like this:
-
-"I built an EV scooter web scraper for BikeDekho that collects structured listing data and exports it to CSV. I used `crawl4ai` as the crawling layer, `BeautifulSoup` for reliable HTML parsing, and also integrated optional `DeepSeek`-based schema extraction for flexibility. One important challenge was understanding the actual pagination and adapting the scraper to `pageno`-based navigation. I also designed it in a hybrid way so rule-based parsing gives stable production output, while LLM extraction is available for future extensibility."
-
-## Notes
-
-- The scraper no longer depends on Groq.
-- `crawl4ai` is part of the active crawl flow.
 - `DeepSeek` is integrated as an optional extraction backend.
 - The site pagination uses `pageno`, not `page`.
 - Because the site can change over time, selectors may need to be updated later if BikeDekho changes its listing layout.
